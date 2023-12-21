@@ -28,6 +28,8 @@ An attacker’s aim for carrying out a CSRF attack is to force the user to submi
 * Changing a password.
 * Sending a message.
 
+![0 UHwQJ56O21Il8MI0](https://github.com/InfoSecExplorer/Cross-Site-Request-Forgery-CSRF-/assets/145893728/537d6ce9-fa1e-4d2e-9148-6e08430b916e)
+
 Social engineering platforms are often used by attackers to launch a CSRF attack. This tricks the victim into clicking a URL that contains a maliciously crafted, unauthorized request for a particular Web application. The user’s browser then sends this maliciously crafted request to a targeted Web application. The request also includes any credentials related to the particular website (e.g., user session cookies). If the user is in an active session with a targeted Web application, the application treats this new request as an authorized request submitted by the user. Thus, the attacker succeeds in exploiting the Web application’s CSRF vulnerability.
 
 # What is the Impact of CSRF Attacks?
@@ -130,7 +132,9 @@ The cookie-setting behavior does not even need to exist within the same web appl
 4. Edit according to your preference,For example:
 5. Done send this to victim.
 
-Defending against CSRF with SameSite cookies
+![csrf1](https://github.com/InfoSecExplorer/Cross-Site-Request-Forgery-CSRF-/assets/145893728/d7273a09-bcbb-49e7-a031-99e60c1110d8)
+
+# Defending against CSRF with SameSite cookies
 
 * The SameSite attribute can be used to control whether and how cookies are submitted in cross-site requests. By setting the attribute on session cookies, an application can prevent the default browser behavior of automatically adding cookies to requests regardless of where they originate.
 
@@ -173,6 +177,8 @@ For the reasons described, it is not recommended to rely solely on SameSite cook
 * Switch From Non-Form `Content-Type: application/json` or `Content-Type: application/x-url-encoded` To `Content-Type: form-multipart`
 * Change/delete the last or frist character from the token
 * Change referrer to Referrer
+
+![csrf2](https://github.com/InfoSecExplorer/Cross-Site-Request-Forgery-CSRF-/assets/145893728/1ef0907e-2ad4-467a-8690-9792e1d022a4)
 
 
 
