@@ -47,10 +47,6 @@ Social engineering platforms are often used by attackers to launch a CSRF attack
 * Remove referer header.
 * Request a CSRF by executing the call manually and use that token for the request.
  
-
-
-
-
 **Base Steps:**
 
 1. Select a request anywhere in Burp Suite Professional that you want to test or exploit.
@@ -134,7 +130,49 @@ The cookie-setting behavior does not even need to exist within the same web appl
 4. Edit according to your preference,For example:
 5. Done send this to victim.
 
+Defending against CSRF with SameSite cookies
 
+* The SameSite attribute can be used to control whether and how cookies are submitted in cross-site requests. By setting the attribute on session cookies, an application can prevent the default browser behavior of automatically adding cookies to requests regardless of where they originate.
+
+* The SameSite attribute is added to the Set-Cookie response header when the server issues a cookie, and the attribute can be given two values, Strict or Lax. For example:
+SetCookie: SessionId=sYMnfCUrAlmqVVZn9dqevxyFpKZt30NN; SameSite=Strict;
+SetCookie: SessionId=sYMnfCUrAlmqVVZn9dqevxyFpKZt30NN; SameSite=Lax;
+
+* If the SameSite attribute is set to Strict, then the browser will not include the cookie in any requests that originate from another site. This is the most defensive option, but it can impair the user experience, because if a logged-in user follows a third-party link to a site, then they will appear not to be logged in, and will need to log in again before interacting with the site in the normal way.
+
+* If the SameSite attribute is set to Lax, then the browser will include the cookie in requests that originate from another site but only if two conditions are met:
+
+1. The request uses the GET method. Requests with other methods, such as POST, will not include the cookie.
+2. The request resulted from a top-level navigation by the user, such as clicking a link. Other requests, such as those initiated by scripts, will not include the cookie.
+
+* Using SameSite cookies in Lax mode does then provide a partial defense against CSRF attacks, because user actions that are targets for CSRF attacks are often implemented using the POST method. Two important caveats here are:
+
+1. Some applications do implement sensitive actions using GET requests.
+2. Many applications and frameworks are tolerant of different HTTP methods. In this situation, even if the application itself employs the POST method by design, it will in fact accept requests that are switched to use the GET method.
+
+For the reasons described, it is not recommended to rely solely on SameSite cookies as a defense against CSRF attacks. Used in conjunction with CSRF Token however, SameSite cookies can provide an additional layer of defense that might mitigate any defects in the token-based defenses.
+
+# Using CSRF Token
+
+* The most robust way to defend against CSRF attacks is to include a CSRF Token within relevant requests. The token should be:
+
+1. Unpredictable with high entropy, as for session tokens in general.
+2. Tied to the user's session.
+3. Strictly validated in every case before the relevant action is executed.
+
+# CSRF Bypass
+
+* Change Request Method [POST => GET]
+* Remove Total Token Parameter
+* Remove The Token, And Give a Blank Parameter
+* Copy a Unused Valid Token , By Dropping The Request and Use That Token
+* Use Own CSRF Token To Feed it to Victim
+* Replace Value With Of A Token of Same Length 
+* Reverse Engineer The Token
+* Extract Token via HTML injection
+* Switch From Non-Form `Content-Type: application/json` or `Content-Type: application/x-url-encoded` To `Content-Type: form-multipart`
+* Change/delete the last or frist character from the token
+* Change referrer to Referrer
 
 
 
