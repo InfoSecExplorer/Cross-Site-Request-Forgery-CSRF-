@@ -2,22 +2,28 @@
 Cross-site request forgery (also known as CSRF) is a web security vulnerability that allows an attacker to induce users to perform actions that they do not intend to perform.
 Cross-Site Request Forgery (CSRF) is an attack that forces an end user to execute unwanted actions on a web application in which they’re currently authenticated. With a little help from social engineering (such as sending a link via email or chat), an attacker may trick the users of a web application into executing actions of the attacker’s choosing.
 
-# For a CSRF attack to be possible, three key conditions must be in place
+# How does CSRF work?
 
-**1. Relevant Action:**
-* There's a specific thing (an "action") that an attacker wants to make happen on the website. For example, the attacker might want to change someone's password or modify user permissions.
+**For a CSRF attack to be possible, three key conditions must be in place:**
 
-**2. Cookie-based Session Handling:**
-* When you log in to the website, it gives you a special "cookie" (a small piece of data) to identify you. This cookie is like your ID card for the website. The website uses this ID card (cookie) to know who is making requests.
+**1. A relevant action:** 
+* There is an action within the application that the attacker has a reason to induce. This might be a privileged action (such as modifying permissions for other users) or any action on user-specific data (such as changing the user's own password).
 
-**3. Performing Actions through HTTP Requests:**
-* To do things on the website (like changing a password), you need to send messages to the website. These messages are called "HTTP requests." The website looks at your ID card (cookie) to know it's really you making the request.
+**2. Cookie-based session handling:** 
+* Performing the action involves issuing one or more HTTP requests, and the application relies solely on session cookies to identify the user who has made the requests. There is no other mechanism in place for tracking sessions or validating user requests.
 
-**4. No Unpredictable Request Parameters:**
-* When you send a message to the website (HTTP request), there are certain details (parameters) you need to include. If the website is not careful, an attacker might be able to figure out or guess these details. For example, if changing a password requires knowing the old password, and the website doesn't check this carefully, an attacker could guess the old password and change it.
+**3. No unpredictable request parameters:** 
+* The requests that perform the action do not contain any parameters whose values the attacker cannot determine or guess. For example, when causing a user to change their password, the function is not vulnerable if an attacker needs to know the value of the existing password.
 
-Although CSRF is normally described in relation to cookie-based session handling, it also arises in other contexts where the application automatically adds some user credentials to requests, such as HTTP Basic authentication and certificate-based authentication.
+For example, suppose an application contains a function that lets the user change the email address on their account. When a user performs this action, they make an HTTP request like the following: 
 
+POST /email/change HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 30
+Cookie: session=yvthwsztyeQkAPzeQ5gHgTvlyxHfsAfE
+
+email=wiener@normal-user.com
 
 # How does Cross-Site Request Forgery work?
 An attacker’s aim for carrying out a CSRF attack is to force the user to submit a state-changing request. Examples include:
