@@ -70,6 +70,50 @@ With these conditions in place, the attacker can construct a web page containing
 
 # Bypassing CSRF token validation
 
+# 1. Common flaws in CSRF token validation
+
+* Some applications correctly validate the token when the request uses the POST method but skip the validation when the GET method is used.
+* In this situation, the attacker can switch to the GET method to bypass the validation.
+
+# 2. Validation of CSRF token depends on token being present
+
+* Some applications correctly validate the token when it is present but skip the validation if the token is omitted.
+* In this situation, the attacker can remove the entire parameter containing the token (not just its value) to bypass the validation.
+
+# 3. CSRF token is not tied to the user session
+
+**Token Not Tied to User Session:**
+
+* In some applications, the CSRF token is not specifically linked to the user's session. Instead, the application maintains a global pool of tokens. Any token from this pool is considered valid, regardless of the user session it is associated with.
+
+**Attacker Obtaining a Valid Token:**
+
+* An attacker, who has their own account on the application, can log in and obtain a valid CSRF token assigned to their session. Since the application accepts any valid token from its global pool, the attacker can then trick a victim user into submitting a request with this token.
+
+
+# 4. CSRF Token Tied to a Non-Session Cookie
+
+* In some applications, the CSRF token is linked to a specific cookie, but not the same cookie used for tracking user sessions. This means that the token is associated with a separate cookie, often used for CSRF protection, distinct from the cookie that tracks user sessions.
+
+***Example Request:**
+
+* In the provided example HTTP request, the application uses two cookies: one for session tracking (session cookie) and another for CSRF protection (csrfKey cookie). These cookies are sent with a request to change the email address (/email/change).
+
+**Vulnerability Explanation:**
+
+* This scenario is harder to exploit compared to a situation where the CSRF token is not tied to any cookie at all, but it is still vulnerable. If the application has a mechanism that allows an attacker to set a cookie in a victim's browser, an attack becomes possible.
+
+**Exploiting the Vulnerability:**
+
+* The attacker, after logging into the application with their own account, obtains a valid CSRF token associated with the CSRF-specific cookie (csrfKey). They can then take advantage of any behavior in the application that allows them to set a cookie in the victim's browser. This could be a cookie-setting behavior that doesn't require any special permissions.
+
+* The attacker sets their CSRF-specific cookie (csrfKey) in the victim's browser and then triggers a CSRF attack by feeding the valid CSRF token to the victim. Since the victim's browser now has the attacker's CSRF-specific cookie, the malicious request appears legitimate.
+
+# 5. CSRF token is simply duplicated in a cookie
+
+* In a further variation on the preceding vulnerability, some applications do not maintain any server-side record of tokens that have been issued, but instead duplicate each token within a cookie and a request parameter. When the subsequent request is validated, the application simply verifies that the token submitted in the request parameter matches the value submitted in the cookie. This is sometimes called the "double submit" defense against CSRF, and is advocated because it is simple to implement and avoids the need for any server-side state.
+
+* In this situation, the attacker can again perform a CSRF attack if the web site contains any cookie setting functionality. Here, the attacker doesn't need to obtain a valid token of their own. They simply invent a token (perhaps in the required format, if that is being checked), leverage the cookie-setting behavior to place their cookie into the victim's browser, and feed their token to the victim in their CSRF attack.
 
 
 
