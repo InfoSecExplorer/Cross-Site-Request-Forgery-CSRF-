@@ -50,15 +50,21 @@ With these conditions in place, the attacker can construct a web page containing
 
 **SameSite=None:**
 
-* If a cookie has the SameSite=None attribute, it means the cookie can be sent with cross-site requests. This is typically used for scenarios where the cookie needs to be sent with requests from different sites or domains. However, when using SameSite=None, the Secure attribute must also be set, meaning the cookie will only be sent over HTTPS connections.
+* If a cookie is set with the SameSite=None attribute, this effectively disables SameSite restrictions altogether, regardless of the browser. As a result, browsers will send this cookie in all requests to the site that issued it, even those that were triggered by completely unrelated third-party sites. 
 
 **SameSite=Lax:**
 
-* Cookies with SameSite=Lax are only sent with "top-level" navigations. In other words, cookies are not sent with cross-site requests that result from embedding resources (like images or frames) or making requests through JavaScript. This provides a level of protection against CSRF attacks while allowing cookies to be sent with regular navigations.
+*  Lax SameSite restrictions mean that browsers will send the cookie in cross-site requests, but only if both of the following conditions are met:
+
+* The request uses the GET method.
+
+* The request resulted from a top-level navigation by the user, such as clicking on a link.
+
+* This means that the cookie is not included in cross-site POST requests, for example. As POST requests are generally used to perform actions that modify data or state (at least according to best practice), they are much more likely to be the target of CSRF attacks. 
 
 **SameSite=Strict:**
 
-* With SameSite=Strict, cookies are only sent in a first-party context. This means the cookie is sent only when the request originates from the same site that set the cookie. Cross-site requests won't include the cookie, even for top-level navigations.
+* If a cookie is set with the SameSite=Strict attribute, browsers will not send it in any cross-site requests. In simple terms, this means that if the target site for the request does not match the site currently shown in the browser's address bar, it will not include the cookie. 
 
 **3. Referer-based validation:** 
 
