@@ -160,42 +160,25 @@ With these conditions in place, the attacker can construct a web page containing
 
 * In this situation, the attacker can again perform a CSRF attack if the web site contains any cookie setting functionality. Here, the attacker doesn't need to obtain a valid token of their own. They simply invent a token (perhaps in the required format, if that is being checked), leverage the cookie-setting behavior to place their cookie into the victim's browser, and feed their token to the victim in their CSRF attack.
 
+# 6. Bypassing Referer-based CSRF defenses
 
+* Aside from defenses that employ CSRF tokens, some applications make use of the HTTP Referer header to attempt to defend against CSRF attacks, normally by verifying that the request originated from the application's own domain. This approach is generally less effective and is often subject to bypasses.
+* 
+**Validation of Referer can be circumvented**
 
+* Some applications validate the Referer header in a naive way that can be bypassed. For example, if the application validates that the domain in the Referer starts with the expected value, then the attacker can place this as a subdomain of their own domain:
+* http://vulnerable-website.com.attacker-website.com/csrf-attack
+* Likewise, if the application simply validates that the Referer contains its own domain name, then the attacker can place the required value elsewhere in the URL:
+* http://attacker-website.com/csrf-attack?vulnerable-website.com
 
-
-
- 
-**Base Steps:**
-
-1. Select a request anywhere in Burp Suite Professional that you want to test or exploit.
-2. From the right-click context menu, select Engagement tools / Generate CSRF PoC.
-3. Burp Suite will generate some HTML that will trigger the selected request (minus cookies, which will be added automatically by the victim's browser).
-4. You can tweak various options in the CSRF PoC generator to fine-tune aspects of the attack. You might need to do this in some unusual situations to deal with quirky features of requests.
-5. Copy the generated HTML into a web page, view it in a browser that is logged in to the vulnerable web site, and test whether the intended request is issued successfully and the desired action occurs.
-
-
-
-# Bypass Method - 5 : Delete the Referrer Header Completely or Suppress it.
-
-**Test Case: CSRF where Referer validation depends on header being present.**
+**Testing CSRF**
 
 1. Intercept the request and try changing referer to some other domain.
 2. If that didn't work then you will have to suppress the refere header.
 3. you can use `<meta name="referrer" content="no-referrer">` or any other technique.
 4. Done, Make a normal POC with that technique.
 
-# Bypass Method - 6 : Try attacker.com or similar payload in referer header. (Validation of Referer can be circumvented).
-
-**Test case: CSRF with broken Referer validation**
-
-1. Intercept the request and try changing referer to some other domain. (Check all cases how it is been verified)
-2. Now Generate a normal POC and include any JavaScript in the script block to alter the URL and Referer
-3. Done Send it to victim.
-
-# Bypass Method - 7: Send null value in csrf token.
-
-**Test Case: Validation of CSRF token depends on token value being**
+**Testing CSRF**
 
 1. Interect with functionality and intercept the request.
 2. Send this requets to repeater.
@@ -203,9 +186,23 @@ With these conditions in place, the attacker can construct a web page containing
 4. Edit according to your preference,For example:
 5. Done send this to victim.
 
+# CSRF Bypass tips
+
+* Change Request Method [POST => GET]
+* Remove Total Token Parameter
+* Remove The Token, And Give a Blank Parameter
+* Copy a Unused Valid Token , By Dropping The Request and Use That Token
+* Use Own CSRF Token To Feed it to Victim
+* Replace Value With Of A Token of Same Length 
+* Reverse Engineer The Token
+* Extract Token via HTML injection
+* Switch From Non-Form `Content-Type: application/json` or `Content-Type: application/x-url-encoded` To `Content-Type: form-multipart`
+* Change/delete the last or frist character from the token
+* Change referrer to Referrer
+
 ![csrf1](https://github.com/InfoSecExplorer/Cross-Site-Request-Forgery-CSRF-/assets/145893728/d7273a09-bcbb-49e7-a031-99e60c1110d8)
 
-# Defending against CSRF with SameSite cookies
+# How to prevent CSRF vulnerabilities
 
 * The SameSite attribute can be used to control whether and how cookies are submitted in cross-site requests. By setting the attribute on session cookies, an application can prevent the default browser behavior of automatically adding cookies to requests regardless of where they originate.
 
@@ -226,28 +223,6 @@ SetCookie: SessionId=sYMnfCUrAlmqVVZn9dqevxyFpKZt30NN; SameSite=Lax;
 2. Many applications and frameworks are tolerant of different HTTP methods. In this situation, even if the application itself employs the POST method by design, it will in fact accept requests that are switched to use the GET method.
 
 For the reasons described, it is not recommended to rely solely on SameSite cookies as a defense against CSRF attacks. Used in conjunction with CSRF Token however, SameSite cookies can provide an additional layer of defense that might mitigate any defects in the token-based defenses.
-
-# Using CSRF Token
-
-* The most robust way to defend against CSRF attacks is to include a CSRF Token within relevant requests. The token should be:
-
-1. Unpredictable with high entropy, as for session tokens in general.
-2. Tied to the user's session.
-3. Strictly validated in every case before the relevant action is executed.
-
-# CSRF Bypass
-
-* Change Request Method [POST => GET]
-* Remove Total Token Parameter
-* Remove The Token, And Give a Blank Parameter
-* Copy a Unused Valid Token , By Dropping The Request and Use That Token
-* Use Own CSRF Token To Feed it to Victim
-* Replace Value With Of A Token of Same Length 
-* Reverse Engineer The Token
-* Extract Token via HTML injection
-* Switch From Non-Form `Content-Type: application/json` or `Content-Type: application/x-url-encoded` To `Content-Type: form-multipart`
-* Change/delete the last or frist character from the token
-* Change referrer to Referrer
 
 ![csrf2](https://github.com/InfoSecExplorer/Cross-Site-Request-Forgery-CSRF-/assets/145893728/1ef0907e-2ad4-467a-8690-9792e1d022a4)
 
