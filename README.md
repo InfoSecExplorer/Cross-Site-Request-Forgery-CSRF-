@@ -75,10 +75,30 @@ With these conditions in place, the attacker can construct a web page containing
 * Some applications correctly validate the token when the request uses the POST method but skip the validation when the GET method is used.
 * In this situation, the attacker can switch to the GET method to bypass the validation.
 
+![csrf3](https://github.com/InfoSecExplorer/Cross-Site-Request-Forgery-CSRF-/assets/145893728/f8b414f7-d128-40bd-8603-fb109f68891f)
+
+**Testing CSRF**
+
+1. Interect with functionality and intercept the request.
+2. Send this requets to repeater and right click change request method
+3. Remove any csrf param and genrate csrf poc
+4. Edit according to your preference,For example
+5. Done send this to victim.
+
 # 2. Validation of CSRF token depends on token being present
 
 * Some applications correctly validate the token when it is present but skip the validation if the token is omitted.
 * In this situation, the attacker can remove the entire parameter containing the token (not just its value) to bypass the validation.
+
+![csrf4](https://github.com/InfoSecExplorer/Cross-Site-Request-Forgery-CSRF-/assets/145893728/ff8305ff-f3b4-4f0e-8981-4412dda4cae1)
+
+**Testing CSRF**
+
+1. Interect with functionality and intercept the request.
+2. Send this requets to repeater.
+3. Remove any csrf param and generate csrf poc
+4. Edit according to your preference,For example:
+5. Done send this to victim.
 
 # 3. CSRF token is not tied to the user session
 
@@ -90,6 +110,13 @@ With these conditions in place, the attacker can construct a web page containing
 
 * An attacker, who has their own account on the application, can log in and obtain a valid CSRF token assigned to their session. Since the application accepts any valid token from its global pool, the attacker can then trick a victim user into submitting a request with this token.
 
+**Testing CSRF**
+
+1. Interect with functionality and intercept the request.
+2. Right click generate csrf poc.
+3. Copy the code in a file.html remove any session token
+4. Drop the request.
+5. Send the file.html to victim.
 
 # 4. CSRF Token Tied to a Non-Session Cookie
 
@@ -98,6 +125,8 @@ With these conditions in place, the attacker can construct a web page containing
 ***Example Request:**
 
 * In the provided example HTTP request, the application uses two cookies: one for session tracking (session cookie) and another for CSRF protection (csrfKey cookie). These cookies are sent with a request to change the email address (/email/change).
+
+![csrf5](https://github.com/InfoSecExplorer/Cross-Site-Request-Forgery-CSRF-/assets/145893728/59082034-84f6-431d-9990-b680c067afed)
 
 **Vulnerability Explanation:**
 
@@ -109,24 +138,27 @@ With these conditions in place, the attacker can construct a web page containing
 
 * The attacker sets their CSRF-specific cookie (csrfKey) in the victim's browser and then triggers a CSRF attack by feeding the valid CSRF token to the victim. Since the victim's browser now has the attacker's CSRF-specific cookie, the malicious request appears legitimate.
 
+**Testing CSRF**
+
+1. Interect with functionality and intercept the request.
+2. Right click generate csrf poc.
+3. Copy the code in a file.html remove any cookie value.
+4. Drop the request.
+5. Send the file.html to victim.
+
 # 5. CSRF token is simply duplicated in a cookie
 
 * In a further variation on the preceding vulnerability, some applications do not maintain any server-side record of tokens that have been issued, but instead duplicate each token within a cookie and a request parameter. When the subsequent request is validated, the application simply verifies that the token submitted in the request parameter matches the value submitted in the cookie. This is sometimes called the "double submit" defense against CSRF, and is advocated because it is simple to implement and avoids the need for any server-side state.
+
+![csrf6](https://github.com/InfoSecExplorer/Cross-Site-Request-Forgery-CSRF-/assets/145893728/c8e51fb7-8786-471a-8aa0-aa48220bd614)
 
 * In this situation, the attacker can again perform a CSRF attack if the web site contains any cookie setting functionality. Here, the attacker doesn't need to obtain a valid token of their own. They simply invent a token (perhaps in the required format, if that is being checked), leverage the cookie-setting behavior to place their cookie into the victim's browser, and feed their token to the victim in their CSRF attack.
 
 
 
-# Testing CSRF
 
-* Remove CSRF token from requests and/or put a blank space.
-* Change POST to GET.
-* Replace the CSRF token with a random value (for example 1).
-* Replace the CSRF token with a random token of the same restraints.
-* Extract token with HTML injection.
-* Use a CSRF token that has been used before.
-* Remove referer header.
-* Request a CSRF by executing the call manually and use that token for the request.
+
+
  
 **Base Steps:**
 
@@ -136,53 +168,7 @@ With these conditions in place, the attacker can construct a web page containing
 4. You can tweak various options in the CSRF PoC generator to fine-tune aspects of the attack. You might need to do this in some unusual situations to deal with quirky features of requests.
 5. Copy the generated HTML into a web page, view it in a browser that is logged in to the vulnerable web site, and test whether the intended request is issued successfully and the desired action occurs.
 
-# Bypass Method -1 : Change the request method POST → GET
 
-**Test Case: Validation of CSRF token depends on request method**
-
-1. Interect with functionality and intercept the request.
-2. Send this requets to repeater and right click change request method
-3. Remove any csrf param and genrate csrf poc
-4. Edit according to your preference,For example
-5. Done send this to victim.
-
-# Bypass Method - 2: Remove csrf param from POST request.
-
-**Test Case: Validation of CSRF token depends on token being present**
-
-1. Interect with functionality and intercept the request.
-2. Send this requets to repeater.
-3. Remove any csrf param and generate csrf poc
-4. Edit according to your preference,For example:
-5. Done send this to victim.
-
-# Bypass Method - 3: Feed your own account generated CSRF token in attack.
-
-**Test Case: CSRF token is not tied to the user session.**
-
-1. Interect with functionality and intercept the request.
-2. Right click generate csrf poc.
-3. Copy the code in a file.html remove any session token
-4. Drop the request.
-5. Send the file.html to victim.
-
-# Bypass Method - 4 : Chain any other vulnerability to add your cookie for example XSS, CRLF → CSRF
-
-**Test Case - 1 : CSRF token is tied to a non-session cookie, when we have two csrf token one in cookie and other in the functionality this is due to presence of two framework one for session handling and one for CSRF protection, which are not integrated together.**
-
-The cookie-setting behavior does not even need to exist within the same web application as the CSRF vulnerability. Any other application within the same overall DNS domain can potentially be leveraged to set cookies in the application that is being targeted, if the cookie that is controlled has suitable scope. For example, a cookie-setting function on staging.demo.normal-website.com could be leveraged to place a cookie that is submitted to secure.normal-website.com.
-
-1. Find any vulnerability which allow you to inject something in the cookie of victim.
-2. Test if CSRF token is tied to session id (try changing session id keeping everything as it is))
-3. Check if the your csrf token works when replaced in victims request
-4. Lastly check if you can inject CRLF and change csrf cookie value
-5. Done now make a csrf poc with xss payload which execute crlf and send this poc to victim
-
-**Test Case - 2 : CSRF token is simply duplicated in a cookie, here csrf token value can be anything just need to be same in cookie as wells as param.**
-
-1. Intercept and action and try changing csrf token in both cookie and param
-2. Make similar poc as above but this time put same csrf token in crlf payload and request param.
-3. Done, Send it to victim.
 
 # Bypass Method - 5 : Delete the Referrer Header Completely or Suppress it.
 
