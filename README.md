@@ -2,7 +2,7 @@
 Cross-site request forgery (also known as CSRF) is a web security vulnerability that allows an attacker to induce users to perform actions that they do not intend to perform.
 Cross-Site Request Forgery (CSRF) is an attack that forces an end user to execute unwanted actions on a web application in which they’re currently authenticated. With a little help from social engineering (such as sending a link via email or chat), an attacker may trick the users of a web application into executing actions of the attacker’s choosing.
 
-![0 UHwQJ56O21Il8MI0](https://github.com/InfoSecExplorer/Cross-Site-Request-Forgery-CSRF-/assets/145893728/537d6ce9-fa1e-4d2e-9148-6e08430b916e)
+![cross-site request forgery](https://github.com/InfoSecExplorer/Cross-Site-Request-Forgery-CSRF-/assets/145893728/62cf876e-5700-4091-84e1-616f14b3154e)
 
 # How does CSRF work?
 
@@ -187,7 +187,7 @@ With these conditions in place, the attacker can construct a web page containing
 4. Edit according to your preference,For example:
 5. Done send this to victim.
 
-# 8. Change CSRF value and add same lenght string Value
+# 8. Change CSRF value and add same lenght string
 
 **Testing CSRF**
 
