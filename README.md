@@ -87,9 +87,8 @@ With these conditions in place, the attacker can construct a web page containing
 
 1. Interect with functionality and intercept the request.
 2. Send this requets to repeater and right click change request method
-3. Remove any csrf param and genrate csrf poc
-4. Edit according to your preference,For example
-5. Done send this to victim.
+4. generate csrf poc and Edit according to your preference.
+5. Deliver to the victim..
 
 # 2. Validation of CSRF token depends on token being present
 
@@ -101,10 +100,10 @@ With these conditions in place, the attacker can construct a web page containing
 **Testing CSRF**
 
 1. Interect with functionality and intercept the request.
-2. Send this requets to repeater.
-3. Remove any csrf param and generate csrf poc
-4. Edit according to your preference,For example:
-5. Done send this to victim.
+2. Send this requets to the repeater.
+3. Remove the csrf entire parameter and right click to generate csrf poc
+4. Edit according to your preference.
+5. Deliver to the victim.
 
 # 3. CSRF token is not tied to the user session
 
@@ -119,10 +118,10 @@ With these conditions in place, the attacker can construct a web page containing
 **Testing CSRF**
 
 1. Interect with functionality and intercept the request.
-2. Right click generate csrf poc.
-3. Copy the code in a file.html remove any session token
-4. Drop the request.
-5. Send the file.html to victim.
+2. copy valied csrf token and Drop the request.
+3. Right click generate csrf poc.
+4. Edit according to your preference.
+5. Deliver to the victim.
 
 # 4. CSRF Token Tied to a Non-Session Cookie
 
@@ -130,7 +129,7 @@ With these conditions in place, the attacker can construct a web page containing
 
 ***Example Request:**
 
-* In the provided example HTTP request, the application uses two cookies: one for session tracking (session cookie) and another for CSRF protection (csrfKey cookie). These cookies are sent with a request to change the email address (/email/change).
+* In the provided example HTTP request, the application uses two cookies: **one for session tracking (session cookie) and another for CSRF protection (csrfKey cookie). These cookies are sent with a request to change the email address (/email/change).**
 
 ![csrf5](https://github.com/InfoSecExplorer/Cross-Site-Request-Forgery-CSRF-/assets/145893728/59082034-84f6-431d-9990-b680c067afed)
 
@@ -148,9 +147,9 @@ With these conditions in place, the attacker can construct a web page containing
 
 1. Interect with functionality and intercept the request.
 2. Right click generate csrf poc.
-3. Copy the code in a file.html remove any cookie value.
-4. Drop the request.
-5. Send the file.html to victim.
+3. Remove any cookie value.
+4. Edit according to your preference.
+5. Deliver to the victim.
 
 # 5. CSRF token is simply duplicated in a cookie
 
@@ -178,13 +177,25 @@ With these conditions in place, the attacker can construct a web page containing
 3. you can use `<meta name="referrer" content="no-referrer">` or any other technique.
 4. Done, Make a normal POC with that technique.
 
+# 7. Send null value in csrf token.
+
 **Testing CSRF**
 
 1. Interect with functionality and intercept the request.
 2. Send this requets to repeater.
-3. Add null csrf param and generate csrf poc
+3. change the csrf token to add a null value and generate csrf poc.
 4. Edit according to your preference,For example:
 5. Done send this to victim.
+
+# 8. Change CSRF value and add same lenght string Value
+
+**Testing CSRF**
+
+1. Interact with the functionality and intercept the request.
+2. Send this request to the repeater.
+3. Change the CSRF token value and add a string of the same length, then generate a CSRF proof of concept (POC).
+4. Edit it according to your preference.
+5. Once done, send this to the victim.
 
 # CSRF Bypass tips
 
